@@ -4,8 +4,8 @@ import {readFile} from 'node:fs/promises';
 async function main() {
   const css = await readFile(new URL('../app/globals.css', import.meta.url), 'utf8');
 
-  assert.match(css, /\.trend-panel \.panel-head \[data-slot=native-select\][^{]*\{[^}]*width:\s*128px/);
-  assert.match(css, /\.trend-panel \.panel-head \[data-slot=native-select\][^{]*\{[^}]*flex-shrink:\s*0/);
+  assert.ok(css.includes('.panel-head [data-slot=native-select-wrapper]{flex:0 0 auto;min-width:0}'));
+  assert.ok(css.includes('.panel-head [data-slot=native-select]{width:128px;min-width:128px;flex-shrink:0;white-space:nowrap}'));
 }
 
 main().catch(error => {
