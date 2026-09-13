@@ -1,0 +1,10 @@
+{
+  "source": "https://github.com/jadchaar/sec-cik-mapper",
+  "path": "mappings/stocks/ticker_to_cik.json",
+  "sourceCommit": "7883b83389836f9bba9bdfe53031467235746334",
+  "sourceUpdatedAt": "2025-02-28T08:13:41Z",
+  "retrievedAt": "2026-09-13T16:11:19.290245+00:00",
+  "entries": 9713,
+  "sha256": "b0ace0fd4d3b74836396e8e24e9bcbd8f2fca09afbcc2e6a34c2d6cb49bb9ef6",
+  "note": "Historical fallback only. Current ticker identity must be checked against SEC Submissions before use."
+}

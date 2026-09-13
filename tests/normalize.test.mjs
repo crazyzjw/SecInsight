@@ -1,0 +1,11 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {normalize} from '../lib/sec/normalize.ts';
+const point=(start,end,val,filed='2026-02-01',form='10-K')=>({start,end,val,filed,form,accn:'0000000001-26-000001'});
+const sub={name:'Test Company',cik:'1',tickers:['TEST'],exchanges:['NYSE'],filings:{recent:{form:['10-K'],filingDate:['2026-02-01'],reportDate:['2025-12-31'],primaryDocument:['test.htm'],accessionNumber:['0000000001-26-000001']}}};
+const facts=(extra={})=>({facts:{'us-gaap':{Revenues:{units:{USD:[point('2025-01-01','2025-12-31',120),point('2025-01-01','2025-09-30',80)]}},...extra}}});
+test('annual revenue and quarterly cumulative differences remain distinct',()=>{const c=normalize(facts(),sub,'TEST');assert.equal(c.annual[0].revenue,120);assert.equal(c.quarterly[0].revenue,40);assert.equal(c.quarterly[0].start,'2025-10-01');assert.equal(c.quarterly[0].derived,true);});
+test('latest restatement is selected and missing values stay null',()=>{const f=facts();f.facts['us-gaap'].Revenues.units.USD.push(point('2025-01-01','2025-12-31',125,'2026-03-01'));const c=normalize(f,sub,'TEST');assert.equal(c.annual[0].revenue,125);assert.equal(c.annual[0].income,null);});
+test('quarter EPS is never derived from cumulative EPS',()=>{const c=normalize(facts({EarningsPerShareDiluted:{units:{'USD/shares':[point('2025-01-01','2025-12-31',5),point('2025-01-01','2025-09-30',3)]}}}),sub,'TEST');assert.equal(c.annual[0].eps,5);assert.equal(c.quarterly[0].eps,null);});
+test('date-mismatched metrics are not combined',()=>{const c=normalize(facts({NetIncomeLoss:{units:{USD:[point('2025-02-01','2025-12-31',20)]}}}),sub,'TEST');assert.equal(c.annual[0].income,null);});
+test('filing link uses unpadded CIK and dashless accession',()=>{const c=normalize(facts(),sub,'TEST');assert.equal(c.filings[0].url,'https://www.sec.gov/Archives/edgar/data/1/000000000126000001/test.htm');});
